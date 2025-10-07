@@ -27,14 +27,17 @@ services:
             KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-    kafka_manager:
-        image: hlebalbau/kafka-manager:stable
-        hostname: kafka-manager
-        container_name: kafka-manager
+    kafka-ui: 
+        image: provectuslabs/kafka-ui:latest
+        hostname: kafka-ui
+        container_name: kafka-ui
         ports:
-            - "9000:9000"
+            - "8000:8080"
         depends_on:
             - kafka
         environment:
-            ZK_HOSTS: "zookeeper:2181"
-            APPLICATION_SECRET: "password"
+            KAFKA_CLUSTERS_0_NAME: "local"
+            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092"
+            KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181"
+            KAFKA_CLUSTERS_0_READONLY: "false"
+            KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: "PLAINTEXT"
