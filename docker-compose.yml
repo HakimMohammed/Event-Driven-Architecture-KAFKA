@@ -1,0 +1,40 @@
+name: event-driven-architecture
+
+services:
+    zookeeper:
+        image: confluentinc/cp-zookeeper:7.7.5
+        hostname: zookeeper
+        container_name: zookeeper
+        ports:
+            - "2181:2181"
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+    kafka:
+        image: confluentinc/cp-kafka:7.7.5
+        hostname: kafka
+        container_name: kafka
+        ports:
+            - "9092:9092" # External access
+            - "29092:29092" # Internal access
+        depends_on:
+            - zookeeper
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+            KAFKA_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://0.0.0.0:9092
+            KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+    kafka_manager:
+        image: hlebalbau/kafka-manager:stable
+        hostname: kafka-manager
+        container_name: kafka-manager
+        ports:
+            - "9000:9000"
+        depends_on:
+            - kafka
+        environment:
+            ZK_HOSTS: "zookeeper:2181"
+            APPLICATION_SECRET: "password"
