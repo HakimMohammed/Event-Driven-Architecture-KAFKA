@@ -19,7 +19,7 @@ public class PageEventController {
 
     @GetMapping("/publish")
     public PageEvent send(String name, String topic) {
-        PageEvent event = new PageEvent(name, Math.random() > 0.5 ? "User 1": "User 2",new Date(), 10 + new Random().nextInt(1000));
+        PageEvent event = new PageEvent(name, Math.random() > 0.5 ? "User 1": "User 2", new Date(), 10 + new Random().nextInt(1000));
         streamBridge.send(topic, event);
         return event;
     }
